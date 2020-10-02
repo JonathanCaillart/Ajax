@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax Giphy</title>
+</head>
+<body>
+    <form onsubmit="handleSubmit(event)" onkeydown="handleKeydown(event)">
+        <input type="text" name="search">
+        <button type="submit">rechercher</button>
+    </form>
+    <div id="container"></div>
+    <script>
+        var timeout;
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            fetchData(event.target.search.value);
+        }
+
+        function handleKeydown(event) {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                fetchData(event.target.value);
+                clearTimeout(timeout);
+            }, 500);
+        }
+
+        function fetchData(search) {
+            var key = 'JCjpTcEFC7WsuiV7pZricrMieOJO47T2';
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', 'https://api.giphy.com/v1/gifs/search?q=' + search + '&api_key=' + key);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    var response = JSON.parse(xhr.responseText);
+                    displayGiphy(response);
+                }
+            };
+            xhr.send();
+        }
+
+        function displayGiphy(data) {
+            var container = document.getElementById('container');
+            container.innerHTML = '';
+    
+            data.data.forEach(function(element) {
+                var img = document.createElement('img');
+                img.src = element.images.fixed_height_small.url;
+
+                container.appendChild(img);
+            });
+        }
+    </script>
+</body>
+</html>
